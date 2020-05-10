@@ -1,22 +1,25 @@
 <template>
   <div class="cinema_body">
-				<ul>
-					<li v-for="item in cinemaList" :key='item.id'>
-						<div>
-							<span>{{item.nm}}</span>
-							<span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
-						</div>
-						<div class="address">
-							<span>{{item.addr}}</span>
-							<span>{{item.distance}}</span>
-						</div>
-						<div class="card">
-							<div v-for="(num,key) in item.tag" v-if="num===1" :key="key" :class="key|classCard(key)">{{key|formatCard(key)}}</div>
-							<!-- <div>小吃</div>
-							<div>折扣卡</div> -->
-       			</div>
-					</li>
-				</ul>
+				<loading v-if="isLoading"></loading>
+				<scroller v-else>
+					<ul>
+						<li v-for="item in cinemaList" :key='item.id'>
+							<div>
+								<span>{{item.nm}}</span>
+								<span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
+							</div>
+							<div class="address">
+								<span>{{item.addr}}</span>
+								<span>{{item.distance}}</span>
+							</div>
+							<div class="card">
+								<div v-for="(num,key) in item.tag" v-if="num===1" :key="key" :class="key|classCard(key)">{{key|formatCard(key)}}</div>
+								<!-- <div>小吃</div>
+								<div>折扣卡</div> -->
+							</div>
+						</li>
+					</ul>
+				</scroller>
 			</div>
 </template>
 
@@ -25,16 +28,32 @@ export default {
 	name:'ciList',
 	data(){
 		return {
-			cinemaList:[]
+			cinemaList:[],
+			isLoading:true,
+			prevCityId:-1
 		}
 	},
-	mounted(){
-		this.axios.get('/api/cinemaList?cityId=10').then((res)=>{
+	activated(){
+		let cityId=this.$store.state.city.id;
+		if(this.prevCityId === cityId){return}
+		this.isLoading=true
+
+		this.axios.get('/api/cinemaList?cityId='+cityId).then((res)=>{
 			let msg = res.data.msg;
 			if(msg==='ok'){
 				this.cinemaList=res.data.data.cinemas
+				this.isLoading=false;
+				this.prevCityId=cityId
 			}
 		})
+		// this.axios.get('/ajax/cinemaList?day=2020-05-11&offset=0&limit=20&districtId=-1&lineId=-1&hallType=-1&brandId=-1&serviceId=-1&areaId=-1&stationId=-1&item=&updateShowDay=true&reqId=1589129093428&cityId='+cityId+'&optimus_uuid=A7DFA88092DA11EAAB2851DDF04EE79E073BEF033BD54F28B8313BA5C60560AB&optimus_risk_level=71&optimus_code=11').then((res)=>{
+		// 	let msg = res.statusText;
+		// 	if(msg==='OK'){
+		// 		this.cinemaList=res.data.cinemas
+		// 		this.isLoading=false;
+		// 		this.prevCityId=cityId
+		// 	}
+		// })
 	},
 	filters: {
 		formatCard(key){

@@ -6,7 +6,10 @@ import mineRouter from './mine'
 
 Vue.use(VueRouter)
 
-const routes = [
+const routes = [{
+    path: '/',
+    redirect: movieRouter
+  },
   movieRouter,
   cinemaRouter,
   mineRouter, {
