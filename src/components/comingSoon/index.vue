@@ -1,19 +1,22 @@
 <template>
   <div class="movie_body">
-				<ul>
-					<li v-for="item in comingList" :key="item.id">
-						<div class="pic_show"><img :src="item.img|setWH('128.180')"></div>
-						<div class="info_list">
-							<h2>{{item.nm}}<img v-if="item.version" src="@/assets/maxs.png" /></h2>
-							<p><span class="person">{{item.wish}}</span> 人想看</p>
-							<p>主演: {{item.star}}</p>
-							<p>{{item.rt}}上映</p>
-						</div>
-						<div class="btn_pre">
-							预售
-						</div>
-					</li>
-				</ul>
+		<loading v-if="isLoading"></loading>
+		<scroller v-else>
+					<ul>
+						<li v-for="item in comingList" :key="item.id">
+							<div class="pic_show"><img :src="item.img|setWH('128.180')"></div>
+							<div class="info_list">
+								<h2>{{item.nm}}<img v-if="item.version" src="@/assets/maxs.png" /></h2>
+								<p><span class="person">{{item.wish}}</span> 人想看</p>
+								<p>主演: {{item.star}}</p>
+								<p>{{item.rt}}上映</p>
+							</div>
+							<div class="btn_pre">
+								预售
+							</div>
+						</li>
+					</ul>
+				</scroller>
 			</div>
 </template>
 
@@ -22,16 +25,33 @@ export default {
 	name:'comingSoon',
 	data(){
 		return {
-			comingList:[]
+			comingList:[],
+			isLoading:true,
+			prevCityId:-1
 		}
 	},
-	mounted(){
-		this.axios.get('/api/movieComingList?cityId=10').then((res)=>{
+	activated(){
+    let cityId=this.$store.state.city.id;
+    if(this.prevCityId === cityId){return}
+		
+		this.axios.get('/api/movieComingList?cityId='+cityId).then((res)=>{
 			let msg=res.data.msg;
 			if(msg==='ok'){
 				this.comingList=res.data.data.comingList
+				this.isLoading=false;
+				this.prevCityId=cityId;
 			}
 		})
+		// this.axios.get('/ajax/comingList?ci='+cityId+'&token=&limit=10&optimus_uuid=A7DFA88092DA11EAAB2851DDF04EE79E073BEF033BD54F28B8313BA5C60560AB&optimus_risk_level=71&optimus_code=10').then((res)=>{
+		// 	let msg=res.statusText;
+		// 	console.log(res);
+			
+		// 	if(msg==='OK'){
+		// 		this.comingList=res.data.coming
+		// 		this.isLoading=false;
+		// 		this.prevCityId=cityId;
+		// 	}
+		// })
 	}
 }
 </script>
