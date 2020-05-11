@@ -19,6 +19,7 @@
       </keep-alive>
       </div>
     <Footer></Footer>
+    <router-view name="detail"></router-view>
   </div>
 </template>
 
