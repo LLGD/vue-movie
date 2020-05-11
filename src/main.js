@@ -7,6 +7,7 @@ import axios from 'axios'
 Vue.prototype.axios = axios
 
 Vue.filter('setWH', (url, arg) => {
+  // console.log(url.replace(/w\.h/, arg), arg);
   return url.replace(/w\.h/, arg);
 })
 
